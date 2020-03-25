@@ -16,3 +16,6 @@ local.properties
 
 .idea/
 .gradle/
+
+buildSrc/build/
+
