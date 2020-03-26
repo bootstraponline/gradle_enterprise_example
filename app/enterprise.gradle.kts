@@ -1,5 +1,6 @@
 import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin
 import java.io.ByteArrayOutputStream
+import java.net.URLEncoder.encode
 
 buildscript {
     val pluginVersion = "3.2"
@@ -14,7 +15,7 @@ buildscript {
 pluginManager.apply(GradleEnterprisePlugin::class)
 
 val isCi = "JENKINS_URL" in System.getenv()
-fun String.encodeURL() = java.net.URLEncoder.encode(this, "UTF-8")
+fun String.encodeURL() = encode(this, "UTF-8")
 fun String.trimAtEnd() = ("x$this").trim().substring(1)
 
 // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
@@ -37,7 +38,7 @@ class BuildScanUtils(val buildScan: com.gradle.scan.plugin.BuildScanExtension) {
     }
 
     private fun execAndGetStdout(args: Array<String>): String {
-        val stdout = java.io.ByteArrayOutputStream()
+        val stdout = ByteArrayOutputStream()
         exec {
             commandLine(*args)
             standardOutput = stdout
