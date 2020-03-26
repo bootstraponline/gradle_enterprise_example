@@ -13,47 +13,37 @@ buildscript {
 
 pluginManager.apply(GradleEnterprisePlugin::class)
 
+val isCi = "JENKINS_URL" in System.getenv()
+fun String.encodeURL() = java.net.URLEncoder.encode(this, "UTF-8")
+fun String.trimAtEnd() = ("x$this").trim().substring(1)
+
 // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
 class BuildScanUtils(val buildScan: com.gradle.scan.plugin.BuildScanExtension) {
-    val runningOnJenkins = "JENKINS_URL" in System.getenv()
-
-    fun isCi(): Boolean {
-        return runningOnJenkins
-    }
-
-    fun encodeURL(url: String): String {
-        return java.net.URLEncoder.encode(url, "UTF-8")
-    }
-
-    fun appendIfMissing(str: String, suffix: String): String {
+    private fun appendIfMissing(str: String, suffix: String): String {
         return if (str.endsWith(suffix)) str else str + suffix
     }
 
-    fun customValueSearchUrl(search: Map<String, String>): String {
+    private fun customValueSearchUrl(search: Map<String, String>): String {
         val query = search.map { (name, value) ->
-            "search.names=${encodeURL(name)}&search.values=${encodeURL(value)}"
+            "search.names=${name.encodeURL()}&search.values=${value.encodeURL()}"
         }.joinToString("&")
         return "${appendIfMissing(buildScan.server, "/")}scans?$query"
     }
 
-    fun addCustomValueSearchLink(title: String, search: Map<String, String>) {
+    private fun addCustomValueSearchLink(title: String, search: Map<String, String>) {
         if (buildScan.server.isNullOrBlank().not()) {
             buildScan.link(title, customValueSearchUrl(search))
         }
     }
 
-    fun trimAtEnd(str: String): String {
-        return ("x$str").trim().substring(1)
-    }
-
-    fun execAndGetStdout(args: Array<String>): String {
+    private fun execAndGetStdout(args: Array<String>): String {
         val stdout = java.io.ByteArrayOutputStream()
         exec {
             commandLine(*args)
             standardOutput = stdout
             workingDir = rootDir
         }
-        return trimAtEnd(stdout.toString())
+        return stdout.toString().trimAtEnd()
     }
 
     fun tagOs() {
@@ -67,13 +57,13 @@ class BuildScanUtils(val buildScan: com.gradle.scan.plugin.BuildScanExtension) {
 //                buildScan.tag("Android Studio")
 //            } else if (System.getProperty("idea.version") != null) {
 //                buildScan.tag("IntelliJ IDEA")
-//            } else if (!isCi()) {
+//            } else if (!isCi) {
 //                buildScan.tag("Cmd Line")
 //            }
     }
 
     fun tagCiOrLocal() {
-        buildScan.tag(if (isCi()) "CI" else "local")
+        buildScan.tag(if (isCi) "CI" else "local")
     }
 
     fun addJenkinsMetadata() {
@@ -159,7 +149,7 @@ gradleEnterprise {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
         termsOfServiceAgree = "yes"
 
-        if (scan.runningOnJenkins) {
+        if (isCi) {
             scan.tagOs()
             scan.tagIde()
             scan.tagCiOrLocal()
