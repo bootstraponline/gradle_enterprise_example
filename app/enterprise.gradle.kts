@@ -142,8 +142,6 @@ fun BuildScanExtension.addGitMetadata() {
     }
 }
 
-// https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
-
 fun appendIfMissing(str: String): String {
     val suffix = "/"
     return if (str.endsWith(suffix)) str else str + suffix
