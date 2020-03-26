@@ -6,3 +6,8 @@
 
 - [settings.gradle.kts](https://github.com/bootstraponline/gradle_enterprise_example/blob/master/app/settings.gradle.kts)
 - [enterprise.gradle.kts](https://github.com/bootstraponline/gradle_enterprise_example/blob/master/app/enterprise.gradle.kts)
+
+## Testing
+
+- Run `export JENKINS_URL=true` so gradle thinks we're running on Jenkins. By default, the script will publish only on CI.
+- `./gradlew clean` will produce a build scan.
