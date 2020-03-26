@@ -2,11 +2,15 @@ import com.gradle.enterprise.gradleplugin.GradleEnterprisePlugin
 import java.io.ByteArrayOutputStream
 import java.net.URLEncoder.encode
 
+// id("com.gradle.enterprise").version("3.2") is only usable from build.gradle or settings.gradle
+// buildscript {...} / pluginManager.apply() is the equivalent for a script plugin.
 buildscript {
     val pluginVersion = "3.2"
+
     repositories {
         gradlePluginPortal()
     }
+
     dependencies {
         classpath("com.gradle:gradle-enterprise-gradle-plugin:${pluginVersion}")
     }
@@ -20,7 +24,8 @@ fun String.trimAtEnd() = ("x$this").trim().substring(1)
 
 // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
 class BuildScanUtils(val buildScan: com.gradle.scan.plugin.BuildScanExtension) {
-    private fun appendIfMissing(str: String, suffix: String): String {
+    private fun appendIfMissing(str: String): String {
+        val suffix = "/"
         return if (str.endsWith(suffix)) str else str + suffix
     }
 
@@ -28,7 +33,7 @@ class BuildScanUtils(val buildScan: com.gradle.scan.plugin.BuildScanExtension) {
         val query = search.map { (name, value) ->
             "search.names=${name.encodeURL()}&search.values=${value.encodeURL()}"
         }.joinToString("&")
-        return "${appendIfMissing(buildScan.server, "/")}scans?$query"
+        return "${appendIfMissing(buildScan.server)}scans?$query"
     }
 
     private fun addCustomValueSearchLink(title: String, search: Map<String, String>) {
@@ -159,19 +164,6 @@ gradleEnterprise {
 
             publishAlways()
             isCaptureTaskInputFiles = true
-
-            background {
-                val os = java.io.ByteArrayOutputStream()
-                exec {
-                    commandLine("git", "rev-parse", "--verify", "HEAD")
-                    standardOutput = os
-                    workingDir = rootDir
-                }
-                value("Git Commit ID", os.toString())
-            }
-
-            // Jenkins metadata
-            scan.addJenkinsMetadata()
         }
 
         buildFinished {
@@ -180,5 +172,6 @@ gradleEnterprise {
             }
         }
     }
+
     server = "https://enterprise-training.gradle.com/"
 }
