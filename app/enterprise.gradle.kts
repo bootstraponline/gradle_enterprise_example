@@ -160,8 +160,6 @@ gradleEnterprise {
 
             publishAlways()
             isCaptureTaskInputFiles = true
-            tag("CI")
-            tag(System.getProperty("os.name"))
 
             background {
                 val os = java.io.ByteArrayOutputStream()
