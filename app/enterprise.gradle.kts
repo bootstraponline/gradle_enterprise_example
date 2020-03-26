@@ -28,9 +28,9 @@ fun BuildScanExtension.tagOs() {
     this.tag(System.getProperty("os.name"))
 }
 
-fun BuildScanExtension.tagIde() {
-    // TODO: broken?
-    // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
+// Note: settings.gradle.kts does not have access to the project object.
+// https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
+//fun BuildScanExtension.tagIde() {
 //            if (project.hasProperty("android.injected.invoked.from.ide")) {
 //                buildScan.tag("Android Studio")
 //            } else if (System.getProperty("idea.version") != null) {
@@ -38,7 +38,7 @@ fun BuildScanExtension.tagIde() {
 //            } else if (!isCi) {
 //                buildScan.tag("Cmd Line")
 //            }
-}
+//}
 
 fun BuildScanExtension.tagCiOrLocal() {
     this.tag(if (isCi) "CI" else "local")
@@ -183,7 +183,6 @@ gradleEnterprise {
         if (isCi) {
             with(buildScan) {
                 tagOs()
-                tagIde()
                 tagCiOrLocal()
                 addJenkinsMetadata()
                 addGitMetadata()
