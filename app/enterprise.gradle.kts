@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.gradle:gradle-enterprise-gradle-plugin:${pluginVersion}")
+        classpath("com.gradle:gradle-enterprise-gradle-plugin:$pluginVersion")
     }
 }
 
