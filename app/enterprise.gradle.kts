@@ -21,7 +21,7 @@ pluginManager.apply(GradleEnterprisePlugin::class)
 
 //  https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
 val isCi = "JENKINS_URL" in System.getenv()
-fun String.encodeURL() = encode(this, "UTF-8")
+fun String.encodeUrl() = encode(this, "UTF-8")
 fun String.trimAtEnd() = ("x$this").trim().substring(1)
 
 fun BuildScanExtension.tagOs() {
