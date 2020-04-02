@@ -66,8 +66,7 @@ fun BuildScanExtension.addJenkinsMetadata() {
     if (jobName != null) {
         val jobNameLabel = "CI job"
         this.value(jobNameLabel, jobName)
-        addCustomValueSearchLink(
-            this,
+        this.addCustomValueSearchLink(
             "CI job build scans",
             mapOf(jobNameLabel to jobName)
         )
@@ -77,8 +76,7 @@ fun BuildScanExtension.addJenkinsMetadata() {
     if (stageName != null) {
         val stageNameLabel = "CI stage"
         this.value(stageNameLabel, stageName)
-        addCustomValueSearchLink(
-            this,
+        this.addCustomValueSearchLink(
             "CI stage build scans",
             mapOf(stageNameLabel to stageName)
         )
@@ -104,8 +102,7 @@ fun BuildScanExtension.addGitMetadata() {
         if (gitCommitId.isNotBlank()) {
             val commitIdLabel = "Git commit id"
             value(commitIdLabel, gitCommitId)
-            addCustomValueSearchLink(
-                this,
+            this.addCustomValueSearchLink(
                 "Git commit id build scans",
                 mapOf(commitIdLabel to gitCommitId)
             )
@@ -147,20 +144,19 @@ fun appendIfMissing(str: String): String {
     return if (str.endsWith(suffix)) str else str + suffix
 }
 
-fun customValueSearchUrl(buildScan: BuildScanExtension, search: Map<String, String>): String {
+fun BuildScanExtension.customValueSearchUrl(search: Map<String, String>): String {
     val query = search.map { (name: String, value: String) ->
-        "search.names=${name.encodeURL()}&search.values=${value.encodeURL()}"
+        "search.names=${name.encodeUrl()}&search.values=${value.encodeUrl()}"
     }.joinToString("&")
-    return "${appendIfMissing(buildScan.server)}scans?$query"
+    return "${appendIfMissing(this.server)}scans?$query"
 }
 
-fun addCustomValueSearchLink(
-    buildScan: BuildScanExtension,
+fun BuildScanExtension.addCustomValueSearchLink(
     title: String,
     search: Map<String, String>
 ) {
-    if (buildScan.server.isNullOrBlank().not()) {
-        buildScan.link(title, customValueSearchUrl(buildScan, search))
+    if (this.server.isNullOrBlank().not()) {
+        this.link(title, this.customValueSearchUrl(search))
     }
 }
 
