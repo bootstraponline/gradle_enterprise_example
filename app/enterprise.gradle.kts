@@ -28,17 +28,20 @@ fun BuildScanExtension.tagOs() {
     this.tag(System.getProperty("os.name"))
 }
 
-// Note: settings.gradle.kts does not have access to the project object.
+// Note: settings.gradle.kts does not have access to the `project` object.
 // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
-//fun BuildScanExtension.tagIde() {
-//            if (project.hasProperty("android.injected.invoked.from.ide")) {
-//                buildScan.tag("Android Studio")
-//            } else if (System.getProperty("idea.version") != null) {
-//                buildScan.tag("IntelliJ IDEA")
-//            } else if (!isCi) {
-//                buildScan.tag("Cmd Line")
-//            }
-//}
+fun BuildScanExtension.tagIde() {
+    val ideaExecutable = System.getProperty("idea.executable") // studio
+    val ideaSelector = System.getProperty("idea.paths.selector") // AndroidStudioPreview4.1
+
+    if (ideaExecutable != null) this.tag(ideaExecutable)
+    if (ideaSelector != null) this.tag(ideaSelector)
+
+    if (ideaExecutable == null &&
+        ideaSelector == null &&
+        isCi.not()
+    ) this.tag("Cmd Line")
+}
 
 fun BuildScanExtension.tagCiOrLocal() {
     this.tag(if (isCi) "CI" else "local")
@@ -176,17 +179,16 @@ gradleEnterprise {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
         termsOfServiceAgree = "yes"
 
-        if (isCi) {
-            with(buildScan) {
-                tagOs()
-                tagCiOrLocal()
-                addJenkinsMetadata()
-                addGitMetadata()
-            }
-
-            publishAlways()
-            isCaptureTaskInputFiles = true
+        with(buildScan) {
+            tagOs()
+            tagCiOrLocal()
+            tagIde()
+            addJenkinsMetadata()
+            addGitMetadata()
         }
+
+        publishAlways()
+        isCaptureTaskInputFiles = true
 
         buildFinished {
             if (this.failure != null) {
