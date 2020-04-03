@@ -1,8 +1,8 @@
 # Gradle Enterprise Example
 
-- ![](./png/tag_cmd_line.png)
-- ![](./png/tag_idea.png)
-- ![](./png/tag_studio.png)
+<img src="./png/tag_cmd_line.png" width="50%" />
+<img src="./png/tag_idea.png" width="50%" />
+<img src="./png/tag_studio.png" width="50%" />
 
 `enterprise.gradle.kts` provides rich metadata for builds published to gradle enterprise.
 
