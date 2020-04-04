@@ -31,8 +31,10 @@ fun BuildScanExtension.tagOs() {
 // Note: settings.gradle.kts does not have access to the `project` object.
 // https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
 fun BuildScanExtension.tagIde() {
-    val ideaExecutable = System.getProperty("idea.executable") // studio
-    val ideaSelector = System.getProperty("idea.paths.selector") // AndroidStudioPreview4.1
+    // example value: studio
+    val ideaExecutable = System.getProperty("idea.executable")
+    // example value: AndroidStudioPreview4.1
+    val ideaSelector = System.getProperty("idea.paths.selector")
 
     if (ideaExecutable != null) this.tag(ideaExecutable)
     if (ideaSelector != null) this.tag(ideaSelector)
