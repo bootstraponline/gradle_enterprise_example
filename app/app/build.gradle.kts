@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-android-extensions")
+    id("io.gitlab.arturbosch.detekt").version("1.7.4")
 }
 
 android {
