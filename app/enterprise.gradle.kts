@@ -95,7 +95,7 @@ fun isGitRepo(): Boolean {
             workingDir = rootDir
         }
         true
-    } catch (ignored: Throwable) {
+    } catch (_: Throwable) {
         false
     }
 }
