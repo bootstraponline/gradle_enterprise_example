@@ -176,7 +176,7 @@ fun BuildScanExtension.addCustomValueSearchLink(
     title: String,
     search: Map<String, String>
 ) {
-    if (!this.server.isNullOrBlank()) {
+    if (this.server?.isNotBlank() == true) {
         this.link(title, this.customValueSearchUrl(search))
     }
 }
