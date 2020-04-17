@@ -88,7 +88,23 @@ fun BuildScanExtension.addJenkinsMetadata() {
     }
 }
 
+fun isGitRepo(): Boolean  {
+    try {
+        exec {
+            commandLine("git", "status")
+            workingDir = rootDir
+        }
+        return true
+    } catch (ignored: Throwable) {}
+
+    return false
+}
+
 fun BuildScanExtension.addGitMetadata() {
+    // Ensure we're in a git repo before calling git commands
+    // Otherwise Gradle will complain because the git exit code is non-zero
+    if (isGitRepo().not()) return
+
     this.background {
         val gitCommitId =
             execAndGetStdout(
