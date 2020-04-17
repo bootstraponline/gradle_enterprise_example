@@ -88,7 +88,7 @@ fun BuildScanExtension.addJenkinsMetadata() {
     }
 }
 
-fun isGitRepo(): Boolean  {
+fun isGitRepo(): Boolean {
     try {
         exec {
             commandLine("git", "status")
