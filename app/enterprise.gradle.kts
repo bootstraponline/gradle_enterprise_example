@@ -41,7 +41,7 @@ fun BuildScanExtension.tagIde() {
 
     if (ideaExecutable == null &&
         ideaSelector == null &&
-        isCi.not()
+        !isCi
     ) this.tag("Cmd Line")
 }
 
@@ -89,21 +89,21 @@ fun BuildScanExtension.addJenkinsMetadata() {
 }
 
 fun isGitRepo(): Boolean {
-    try {
+    return try {
         exec {
             commandLine("git", "status")
             workingDir = rootDir
         }
-        return true
-    } catch (ignored: Throwable) {}
-
-    return false
+        true
+    } catch (ignored: Throwable) {
+        false
+    }
 }
 
 fun BuildScanExtension.addGitMetadata() {
     // Ensure we're in a git repo before calling git commands
     // Otherwise Gradle will complain because the git exit code is non-zero
-    if (isGitRepo().not()) return
+    if (!isGitRepo()) return
 
     this.background {
         val gitCommitId =
@@ -176,7 +176,7 @@ fun BuildScanExtension.addCustomValueSearchLink(
     title: String,
     search: Map<String, String>
 ) {
-    if (this.server.isNullOrBlank().not()) {
+    if (!this.server.isNullOrBlank()) {
         this.link(title, this.customValueSearchUrl(search))
     }
 }
