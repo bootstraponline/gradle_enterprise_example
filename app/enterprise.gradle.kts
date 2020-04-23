@@ -20,7 +20,10 @@ buildscript {
 pluginManager.apply(GradleEnterprisePlugin::class)
 
 //  https://github.com/gradle/gradle-build-scan-snippets/blob/master/guided-trials-default-custom-user-data/default-custom-user-data.gradle
-val isCi = "JENKINS_URL" in System.getenv()
+
+val isJenkins = "JENKINS_URL" in System.getenv()
+val isBuildkite = "BUILDKITE" in System.getenv()
+val isCi = isJenkins || isBuildkite
 fun String.encodeUrl() = encode(this, "UTF-8")
 fun String.trimAtEnd() = ("x$this").trim().substring(1)
 
@@ -49,25 +52,39 @@ fun BuildScanExtension.tagCiOrLocal() {
     this.tag(if (isCi) "CI" else "local")
 }
 
-fun BuildScanExtension.addJenkinsMetadata() {
-    val buildUrl = System.getenv("BUILD_URL")
+val ciName: String get() {
+    if (isJenkins) return "Jenkins"
+    if (isBuildkite) return "Buildkite"
+    return ""
+}
+
+fun BuildScanExtension._ciMetadata(
+    buildUrl: String,
+    buildNumber: String,
+    nodeName: String,
+    jobName: String,
+    stageName: String
+) {
+    if (ciName.isNotBlank()) this.tag(ciName)
+
+    val buildUrl = System.getenv(buildUrl)
     if (buildUrl != null) {
-        this.link("Jenkins build", buildUrl)
+        this.link("$ciName build", buildUrl)
     }
 
-    val buildNumber = System.getenv("BUILD_NUMBER")
+    val buildNumber = System.getenv(buildNumber)
     if (buildNumber != null) {
         this.value("CI build number", buildNumber)
     }
 
-    val nodeName = System.getenv("NODE_NAME")
+    val nodeName = System.getenv(nodeName)
     if (nodeName != null) {
         val agentName = if (nodeName == "master") "master-node" else nodeName
         this.tag(agentName)
         this.value("CI node name", agentName)
     }
 
-    val jobName = System.getenv("JOB_NAME")
+    val jobName = System.getenv(jobName)
     if (jobName != null) {
         val jobNameLabel = "CI job"
         this.value(jobNameLabel, jobName)
@@ -77,7 +94,7 @@ fun BuildScanExtension.addJenkinsMetadata() {
         )
     }
 
-    val stageName = System.getenv("STAGE_NAME")
+    val stageName = System.getenv(stageName)
     if (stageName != null) {
         val stageNameLabel = "CI stage"
         this.value(stageNameLabel, stageName)
@@ -85,6 +102,33 @@ fun BuildScanExtension.addJenkinsMetadata() {
             "CI stage build scans",
             mapOf(stageNameLabel to stageName)
         )
+    }
+}
+
+fun BuildScanExtension.addJenkinsMetadata() {
+    _ciMetadata(
+        buildUrl = "BUILD_URL",
+        buildNumber = "BUILD_NUMBER",
+        nodeName = "NODE_NAME",
+        jobName = "JOB_NAME",
+        stageName = "STAGE_NAME"
+    )
+}
+
+fun BuildScanExtension.addBuildkiteMetadata() {
+    _ciMetadata(
+        buildUrl = "BUILDKITE_BUILD_URL",
+        buildNumber = "BUILDKITE_BUILD_NUMBER",
+        nodeName = "BUILDKITE_AGENT_NAME",
+        jobName = "BUILDKITE_LABEL",
+        stageName = "BUILDKITE_PIPELINE_NAME"
+    )
+}
+
+fun BuildScanExtension.addCiMetadata() {
+    when {
+        isJenkins -> addJenkinsMetadata()
+        isBuildkite -> addBuildkiteMetadata()
     }
 }
 
@@ -201,7 +245,7 @@ gradleEnterprise {
             tagOs()
             tagCiOrLocal()
             tagIde()
-            addJenkinsMetadata()
+            addCiMetadata()
             addGitMetadata()
         }
 
