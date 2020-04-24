@@ -52,13 +52,11 @@ fun BuildScanExtension.tagCiOrLocal() {
     this.tag(if (isCi) "CI" else "local")
 }
 
-val ciName: String by lazy {
-    when {
+val ciName = when {
         isJenkins -> "Jenkins"
         isBuildkite -> "Buildkite"
         else -> ""
     }
-}
 
 fun BuildScanExtension.addCiMetadata(
     buildUrl: String,
