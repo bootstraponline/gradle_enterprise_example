@@ -60,7 +60,7 @@ val ciName: String by lazy {
     }
 }
 
-fun BuildScanExtension._ciMetadata(
+fun BuildScanExtension.addCiMetadata(
     buildUrl: String,
     buildNumber: String,
     nodeName: String,
@@ -108,7 +108,7 @@ fun BuildScanExtension._ciMetadata(
 }
 
 fun BuildScanExtension.addJenkinsMetadata() {
-    _ciMetadata(
+    addCiMetadata(
         buildUrl = "BUILD_URL",
         buildNumber = "BUILD_NUMBER",
         nodeName = "NODE_NAME",
@@ -118,7 +118,7 @@ fun BuildScanExtension.addJenkinsMetadata() {
 }
 
 fun BuildScanExtension.addBuildkiteMetadata() {
-    _ciMetadata(
+    addCiMetadata(
         buildUrl = "BUILDKITE_BUILD_URL",
         buildNumber = "BUILDKITE_BUILD_NUMBER",
         nodeName = "BUILDKITE_AGENT_NAME",
