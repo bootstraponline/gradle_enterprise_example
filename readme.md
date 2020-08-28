@@ -55,3 +55,11 @@ writer.use { writer ->
     writer.flush()
 }
 ```
+
+## Example
+
+```
+compileOnly("com.gradle:gradle-enterprise-gradle-plugin:${gradleEnterprisePluginVersion}")
+```
+- https://github.com/spring-io/gradle-enterprise-conventions/blob/8ca8aeecef42a06fb7e1f35f31e43d23519b80c6/gradle-enterprise-conventions-gradle-plugin/build.gradle#L22
+- https://github.com/spring-io/gradle-enterprise-conventions
